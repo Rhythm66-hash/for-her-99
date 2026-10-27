@@ -714,6 +714,8 @@
     }));
     grid.innerHTML = memories.map(memoryCardMarkup).join("");
     $("#memoryCount").textContent = pad(uploadedMemories.length);
+    const syncPhotoCount = $("#syncPhotoCount");
+    if (syncPhotoCount) syncPhotoCount.textContent = String(uploadedMemories.length);
     refreshIcons();
     setupReveal();
   }
@@ -1042,6 +1044,184 @@
       currentMemory = null;
       renderGallery();
       showToast("照片已从星河中移除");
+    });
+  }
+
+  function blobToDataURL(blob) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(reader.error);
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  function dataURLToBlob(dataURL) {
+    const [metadata, encoded] = String(dataURL).split(",");
+    if (!metadata.startsWith("data:image/") || !encoded) {
+      throw new Error("Invalid photo data");
+    }
+    const mime = metadata.slice(5).split(";")[0];
+    const binary = atob(encoded);
+    const bytes = new Uint8Array(binary.length);
+    for (let index = 0; index < binary.length; index += 1) {
+      bytes[index] = binary.charCodeAt(index);
+    }
+    return new Blob([bytes], { type: mime });
+  }
+
+  function setupMemorySync() {
+    const dialog = $("#memorySyncDialog");
+    const importButton = $("#importMemoriesButton");
+    const importInput = $("#syncImportInput");
+    const exportButton = $("#exportMemoriesButton");
+    const status = $("#syncStatus");
+
+    $("#memorySyncButton").addEventListener("click", () => {
+      $("#syncPhotoCount").textContent = String(uploadedMemories.length);
+      status.textContent = "照片与文字只会在你们之间传递。";
+      openDialog(dialog);
+    });
+
+    exportButton.addEventListener("click", async () => {
+      exportButton.disabled = true;
+      status.textContent = "正在把照片和文字打包...";
+      try {
+        const records = await getAllPhotos().catch(() => []);
+        const photos = [];
+        for (const record of records) {
+          photos.push({
+            id: record.id,
+            createdAt: record.createdAt,
+            caption: record.caption || "",
+            data: await blobToDataURL(record.blob),
+          });
+        }
+
+        let wish = null;
+        try {
+          wish = JSON.parse(localStorage.getItem(WISH_KEY) || "null");
+        } catch {
+          wish = null;
+        }
+
+        const backup = {
+          app: "lunaris-99-backup",
+          version: 1,
+          exportedAt: new Date().toISOString(),
+          settings,
+          wish,
+          photos,
+        };
+        const date = toDateInputValue(new Date());
+        const file = new File(
+          [JSON.stringify(backup)],
+          `给她的99号宇宙-回忆备份-${date}.json`,
+          { type: "application/json" },
+        );
+
+        status.textContent = `已打包 ${photos.length} 张照片，正在打开分享...`;
+        if (navigator.canShare?.({ files: [file] })) {
+          try {
+            await navigator.share({
+              title: "给她的99号宇宙",
+              text: "这是我们共同的回忆备份。",
+              files: [file],
+            });
+            status.textContent = "回忆文件已交给分享面板。";
+            return;
+          } catch (error) {
+            if (error?.name === "AbortError") {
+              status.textContent = "已取消分享，可以再点一次。";
+              return;
+            }
+          }
+        }
+
+        const downloadUrl = URL.createObjectURL(file);
+        const link = document.createElement("a");
+        link.href = downloadUrl;
+        link.download = file.name;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 2000);
+        status.textContent = "回忆文件已下载，可以直接发给对方。";
+      } catch (error) {
+        console.warn("Could not export memories:", error);
+        status.textContent = "导出没有完成，请再试一次。";
+      } finally {
+        exportButton.disabled = false;
+      }
+    });
+
+    importButton.addEventListener("click", () => importInput.click());
+    importInput.addEventListener("change", async () => {
+      const file = importInput.files?.[0];
+      if (!file) return;
+      if (file.size > 80 * 1024 * 1024) {
+        status.textContent = "这个回忆文件太大了，请减少照片数量。";
+        importInput.value = "";
+        return;
+      }
+
+      status.textContent = "正在把回忆接入这面照片墙...";
+      importButton.disabled = true;
+      try {
+        const backup = JSON.parse(await file.text());
+        if (backup?.app !== "lunaris-99-backup" || !Array.isArray(backup.photos)) {
+          throw new Error("Unsupported backup");
+        }
+
+        if (backup.settings) {
+          settings = {
+            myName: String(backup.settings.myName || DEFAULT_SETTINGS.myName).slice(0, 12),
+            girlName: String(backup.settings.girlName || DEFAULT_SETTINGS.girlName).slice(0, 12),
+            anniversary: /^\d{4}-\d{2}-\d{2}$/.test(backup.settings.anniversary)
+              ? backup.settings.anniversary
+              : DEFAULT_SETTINGS.anniversary,
+          };
+          saveSettings();
+          renderNames();
+          updateTimeDisplay();
+        }
+
+        if (backup.wish?.wish) {
+          try {
+            localStorage.setItem(WISH_KEY, JSON.stringify(backup.wish));
+            $("#wishInput").value = "";
+            $("#wishSaved").textContent = `已经留在今夜星河里：${backup.wish.wish}`;
+          } catch {
+            // The photos can still be imported if local storage is unavailable.
+          }
+        }
+
+        let imported = 0;
+        for (const photo of backup.photos.slice(0, 30)) {
+          try {
+            const blob = dataURLToBlob(photo.data);
+            await putPhoto({
+              id: String(photo.id || `photo-import-${Date.now()}-${imported}`).slice(0, 200),
+              blob,
+              createdAt: photo.createdAt || new Date().toISOString(),
+              caption: String(photo.caption || "").slice(0, 48),
+            });
+            imported += 1;
+          } catch (error) {
+            console.warn("Skipped one imported photo:", error);
+          }
+        }
+
+        await loadUploadedPhotos();
+        status.textContent = `导入完成，${imported} 张照片已经进入这面照片墙。`;
+        showToast("我们的回忆，已经同步到这台设备");
+      } catch (error) {
+        console.warn("Could not import memories:", error);
+        status.textContent = "这个文件不是有效的回忆备份，请确认后再试。";
+      } finally {
+        importButton.disabled = false;
+        importInput.value = "";
+      }
     });
   }
 
@@ -1649,6 +1829,7 @@
     setupMemoryGrid();
     setupUploads();
     setupCaptionActions();
+    setupMemorySync();
     setupAudio();
     setupGame();
     setupWish();

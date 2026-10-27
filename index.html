@@ -236,10 +236,16 @@
         </div>
         <div class="memory-heading-side reveal">
           <p>有些瞬间不必惊天动地，只要你在身边，平常的一天也值得被收藏。</p>
-          <button class="button button-light" id="uploadButton" type="button">
-            <i data-lucide="plus"></i>
-            放进一张照片
-          </button>
+          <div class="memory-actions">
+            <button class="button button-light" id="uploadButton" type="button">
+              <i data-lucide="plus"></i>
+              放进一张照片
+            </button>
+            <button class="button button-ghost" id="memorySyncButton" type="button">
+              <i data-lucide="refresh-cw"></i>
+              同步回忆
+            </button>
+          </div>
         </div>
       </div>
 
@@ -506,6 +512,37 @@
         <i data-lucide="heart"></i>
         收进心里
       </button>
+    </div>
+  </dialog>
+
+  <dialog class="sync-dialog" id="memorySyncDialog">
+    <div class="sync-panel">
+      <div class="dialog-heading">
+        <div>
+          <span class="dialog-kicker">CARRY OUR MEMORIES</span>
+          <h2>把回忆带到另一部手机</h2>
+        </div>
+        <button class="icon-button dialog-close" type="button" data-close-dialog aria-label="关闭同步">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <p class="dialog-intro">导出一个回忆文件，用微信发给她；她在另一台手机打开这里导入，就能看到同一面照片墙。</p>
+      <div class="sync-count">
+        <span><i data-lucide="images"></i> 当前已收藏</span>
+        <strong><b id="syncPhotoCount">0</b> 张照片</strong>
+      </div>
+      <div class="sync-actions">
+        <button class="button button-primary" id="exportMemoriesButton" type="button">
+          <i data-lucide="share-2"></i>
+          导出并分享回忆
+        </button>
+        <button class="button button-light" id="importMemoriesButton" type="button">
+          <i data-lucide="download"></i>
+          导入回忆文件
+        </button>
+      </div>
+      <p class="sync-status" id="syncStatus" aria-live="polite">照片与文字只会在你们之间传递。</p>
+      <input id="syncImportInput" type="file" accept=".json,application/json" hidden>
     </div>
   </dialog>
 
