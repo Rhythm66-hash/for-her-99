@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#09090d">
+  <meta name="description" content="一座只为她旋转的私人宇宙：我们的时间、我们的照片，以及藏在星星里的情话。">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%2309090d'/%3E%3Cpath d='M32 49S12 37 12 24.5C12 17.6 17.2 13 23.2 13c3.6 0 6.5 1.8 8.8 4.6C34.3 14.8 37.2 13 40.8 13 46.8 13 52 17.6 52 24.5 52 37 32 49 32 49Z' fill='%23f2ddad'/%3E%3C/svg%3E">
+  <title>99号宇宙 · 只围绕你旋转</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">跳至主要内容</a>
+  <div class="grain" aria-hidden="true"></div>
+  <canvas id="skyCanvas" class="sky-canvas" aria-hidden="true"></canvas>
+  <div class="pointer-halo" id="pointerHalo" aria-hidden="true"></div>
+  <div class="scroll-progress" aria-hidden="true"><span id="scrollProgress"></span></div>
+
+  <header class="site-header" id="siteHeader">
+    <a class="brand" href="#top" aria-label="返回首页">
+      <span class="brand-mark"><i data-lucide="orbit"></i></span>
+      <span class="brand-copy">
+        <strong>LUNARIS</strong>
+        <small>OUR PRIVATE UNIVERSE</small>
+      </span>
+    </a>
+
+    <nav class="site-nav" id="siteNav" aria-label="主导航">
+      <a class="is-active" href="#top"><span>01</span>星轨</a>
+      <a href="#time"><span>02</span>时间里</a>
+      <a href="#memories"><span>03</span>记忆舱</a>
+      <a href="#play"><span>04</span>游园</a>
+      <a href="#letter"><span>05</span>信笺</a>
+    </nav>
+
+    <div class="header-actions">
+      <button class="icon-button music-button" id="musicButton" type="button" aria-label="播放 Tizzy T《99》背景音乐" title="播放 Tizzy T《99》">
+        <span class="music-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <i class="music-icon" data-lucide="music-2"></i>
+      </button>
+      <button class="icon-button" id="settingsButton" type="button" aria-label="编辑我们的专属设定" title="专属设定">
+        <i data-lucide="sliders-horizontal"></i>
+      </button>
+      <button class="icon-button menu-button" id="menuButton" type="button" aria-label="打开导航" aria-expanded="false">
+        <i data-lucide="menu"></i>
+      </button>
+    </div>
+  </header>
+
+  <div class="now-playing" id="nowPlaying" aria-live="polite">
+    <span class="now-playing-icon"><i data-lucide="music-2"></i></span>
+    <span class="now-playing-copy"><small>NOW PLAYING</small><strong>Tizzy T · 99</strong></span>
+    <span class="now-playing-wave" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+  </div>
+
+  <main id="main">
+    <section class="hero" id="top" aria-labelledby="heroTitle">
+      <div class="hero-glow" aria-hidden="true"></div>
+      <div class="hero-side-note" aria-hidden="true">
+        <span>EST. IN THE STARS</span>
+        <i></i>
+        <span>1017 · ∞</span>
+      </div>
+
+      <div class="hero-copy">
+        <p class="eyebrow reveal">
+          <i data-lucide="sparkles"></i>
+          <span>FOR <b id="heroGirlName">宝贝</b>, MY ONLY GRAVITY</span>
+        </p>
+        <h1 id="heroTitle" class="reveal">
+          <span>我的宇宙，</span>
+          <span>只围绕</span>
+          <span class="hero-accent"><em>你</em> 旋转</span>
+        </h1>
+        <p class="hero-intro reveal">
+          在已知与未知的所有星系里，我最确定的一件事，<br>
+          是跨越一切轨道，向你靠近。
+        </p>
+
+        <div class="hero-meta reveal">
+          <div>
+            <span>相爱第</span>
+            <strong id="heroDays">000</strong>
+            <span>天</span>
+          </div>
+          <span class="meta-divider"></span>
+          <div>
+            <span>下一次周年</span>
+            <strong id="heroCountdown">000</strong>
+            <span>天</span>
+          </div>
+        </div>
+
+        <div class="hero-actions reveal">
+          <a class="button button-primary" href="#memories">
+            <i data-lucide="heart"></i>
+            走进我们的星河
+          </a>
+          <button class="button button-ghost" type="button" data-open-letter>
+            <i data-lucide="mail-open"></i>
+            读一封信
+          </button>
+        </div>
+      </div>
+
+      <div class="hero-art reveal" aria-hidden="true">
+        <div class="hero-coordinate top">31°14′N · 121°29′E</div>
+        <div class="hero-coordinate bottom">OBSERVATION LOG / 1017</div>
+        <div class="planet-system" id="planetSystem">
+          <div class="planet-aura"></div>
+          <div class="orbit-ring ring-one"><span class="orbit-dot dot-gold"></span></div>
+          <div class="orbit-ring ring-two"><span class="orbit-dot dot-rose"></span></div>
+          <div class="orbit-ring ring-three"><span class="orbit-dot dot-mint"></span></div>
+          <div class="planet">
+            <span class="planet-shine"></span>
+            <span class="planet-text">YOU</span>
+            <span class="planet-text sub">ARE MY<br>UNIVERSE</span>
+          </div>
+          <span class="orbit-label label-one">GRAVITY</span>
+          <span class="orbit-label label-two">∞ HEARTBEATS</span>
+          <span class="orbit-heart"><i data-lucide="heart"></i></span>
+        </div>
+        <p class="planet-caption">轻触星球 · 接收一句宇宙密语</p>
+      </div>
+
+      <a class="scroll-mark" href="#time" aria-label="向下浏览">
+        <span>SCROLL TO DISCOVER</span>
+        <i data-lucide="arrow-down"></i>
+      </a>
+      <p class="daily-love" id="dailyLove">今天也爱你，比昨天多一点。</p>
+    </section>
+
+    <div class="love-marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <span>心动指数 ∞</span><i></i>
+        <span>轨道中心 <b id="marqueeGirlName">宝贝</b></span><i></i>
+        <span>距离 0.00 LY</span><i></i>
+        <span>FOREVER IS LOADING</span><i></i>
+        <span>心动指数 ∞</span><i></i>
+        <span>轨道中心 <b>宝贝</b></span><i></i>
+        <span>距离 0.00 LY</span><i></i>
+        <span>FOREVER IS LOADING</span><i></i>
+      </div>
+    </div>
+
+    <section class="section time-section" id="time" aria-labelledby="timeTitle">
+      <div class="section-index" aria-hidden="true">02</div>
+      <div class="time-copy">
+        <p class="section-kicker reveal"><i data-lucide="telescope"></i> OUR LOVE TIMELINE</p>
+        <h2 id="timeTitle" class="reveal">时间经过我们，<br>就有了<span class="serif-accent">温柔的形状</span>。</h2>
+        <p class="section-lede reveal">
+          宇宙的尺度大到难以想象，而我只想用每一个普通日子，认真记住你。
+          从 <b id="anniversaryInline">2026.10.17</b> 开始，时间有了新的方向。
+        </p>
+
+        <div class="time-stats reveal" aria-label="相爱时长">
+          <div class="time-stat">
+            <span>DAYS</span>
+            <strong id="liveDays">000</strong>
+            <small>相爱的日子</small>
+          </div>
+          <div class="time-stat">
+            <span>HOURS</span>
+            <strong id="liveHours">00</strong>
+            <small>跳动的时针</small>
+          </div>
+          <div class="time-stat">
+            <span>MINUTES</span>
+            <strong id="liveMinutes">00</strong>
+            <small>想你的分钟</small>
+          </div>
+          <div class="time-stat">
+            <span>SECONDS</span>
+            <strong id="liveSeconds">00</strong>
+            <small>此刻的心跳</small>
+          </div>
+        </div>
+
+        <blockquote class="time-quote reveal">
+          <i data-lucide="quote"></i>
+          <p>“在所有不可复制的日子里，<br>我最庆幸的是，和你拥有同一段时间。”</p>
+        </blockquote>
+      </div>
+
+      <div class="countdown-panel reveal" aria-label="恋爱倒计时">
+        <div class="panel-orbit" aria-hidden="true">
+          <span></span><span></span><i></i>
+        </div>
+        <div class="panel-heading">
+          <span class="live-dot"></span>
+          <span>NEXT HEARTBEAT</span>
+          <i data-lucide="heart-pulse"></i>
+        </div>
+        <p class="panel-overline">下一次心动纪念</p>
+        <div class="panel-title-row">
+          <h3 id="nextAnniversaryTitle">第 1 个周年</h3>
+          <span id="nextAnniversaryDate">2027.10.17</span>
+        </div>
+
+        <div class="countdown-grid" aria-live="polite">
+          <div><strong id="countdownDays">000</strong><span>天</span></div>
+          <b>:</b>
+          <div><strong id="countdownHours">00</strong><span>时</span></div>
+          <b>:</b>
+          <div><strong id="countdownMinutes">00</strong><span>分</span></div>
+          <b>:</b>
+          <div><strong id="countdownSeconds">00</strong><span>秒</span></div>
+        </div>
+
+        <div class="year-progress">
+          <div class="progress-labels">
+            <span id="lastAnniversaryLabel">上一站 / 2026.10.17</span>
+            <span id="progressPercent">3%</span>
+          </div>
+          <div class="progress-track"><span id="yearProgressBar"></span><i></i></div>
+          <div class="progress-foot">
+            <span><i data-lucide="map-pin"></i> 正在前往下一颗星球</span>
+            <span id="relationshipPhase">YEAR 01</span>
+          </div>
+        </div>
+
+        <div class="panel-footer">
+          <p>我们已经一起看过 <strong id="sunriseCount">1,024</strong> 次日出。</p>
+          <button class="text-button" type="button" id="openSettingsInline">
+            校准我们的时间 <i data-lucide="arrow-up-right"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section memories-section" id="memories" aria-labelledby="memoriesTitle">
+      <div class="memories-heading">
+        <div>
+          <p class="section-kicker reveal"><i data-lucide="image"></i> OUR MEMORY ARCHIVE</p>
+          <h2 id="memoriesTitle" class="reveal">把我们的故事，<br><span class="serif-accent">挂进星河</span>。</h2>
+        </div>
+        <div class="memory-heading-side reveal">
+          <p>有些瞬间不必惊天动地，只要你在身边，平常的一天也值得被收藏。</p>
+          <button class="button button-light" id="uploadButton" type="button">
+            <i data-lucide="plus"></i>
+            放进一张照片
+          </button>
+        </div>
+      </div>
+
+      <div class="gallery-meta reveal">
+        <span><i data-lucide="archive"></i> 已放入 <b id="memoryCount">00</b> / 06</span>
+        <span class="gallery-meta-line"></span>
+        <span>点击照片，展开那一刻</span>
+      </div>
+
+      <div class="memory-grid" id="memoryGrid" aria-live="polite"></div>
+
+      <div class="drop-hint" id="dropHint">
+        <i data-lucide="upload-cloud"></i>
+        <span>松开，把这一刻放进宇宙</span>
+      </div>
+      <input id="photoInput" type="file" accept="image/*" multiple hidden>
+    </section>
+
+    <section class="section game-section" id="play" aria-labelledby="gameTitle">
+      <div class="section-index light-index" aria-hidden="true">04</div>
+      <div class="game-copy">
+        <p class="section-kicker reveal"><i data-lucide="gamepad-2"></i> A TINY ORBITAL GAME</p>
+        <h2 id="gameTitle" class="reveal">今晚，<br>替宇宙<span class="serif-accent">接住心动</span>。</h2>
+        <p class="section-lede reveal">
+          她让每一颗星星都有了去处。移动你的小星球，接住散落的八枚星愿，
+          让这艘只载着你们的飞船重新发光。
+        </p>
+        <div class="game-rules reveal">
+          <div>
+            <span class="rule-icon"><i data-lucide="mouse-pointer-click"></i></span>
+            <p><strong>靠近星愿</strong><small>鼠标、手指或方向键操控</small></p>
+          </div>
+          <div>
+            <span class="rule-icon"><i data-lucide="sparkles"></i></span>
+            <p><strong>集齐 8 颗</strong><small>每一颗都藏着一句心里话</small></p>
+          </div>
+          <div>
+            <span class="rule-icon"><i data-lucide="timer"></i></span>
+            <p><strong>45 秒</strong><small>不用着急，我会一直等你</small></p>
+          </div>
+        </div>
+        <p class="game-quote reveal">“你不需要成为谁，<br>你出现本身，就是我的万有引力。”</p>
+      </div>
+
+      <div class="game-shell reveal">
+        <div class="game-topbar">
+          <div>
+            <span class="game-label"><i data-lucide="orbit"></i> ORBIT 1017</span>
+            <strong>星愿收集计划</strong>
+          </div>
+          <div class="game-hud">
+            <span>星愿 <b id="catchCount">0 / 8</b></span>
+            <span>时间 <b id="gameTimer">45.0</b></span>
+          </div>
+        </div>
+        <div class="game-stage" id="gameStage">
+          <canvas id="gameCanvas" aria-label="收集星愿小游戏"></canvas>
+          <div class="game-stage-corners" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+          <div class="game-overlay" id="gameOverlay">
+            <div class="overlay-orbit" aria-hidden="true"><i data-lucide="sparkle"></i></div>
+            <span class="overlay-kicker">ORBITAL GAME · 01</span>
+            <h3 id="gameOverlayTitle">接住落向你的每一颗心动</h3>
+            <p id="gameOverlayText">她值得整个宇宙，而你只需要移动一点点。</p>
+            <button class="button button-primary" id="startGameButton" type="button">
+              <i data-lucide="play"></i>
+              开始收集
+            </button>
+          </div>
+          <div class="caught-note" id="caughtNote" aria-live="polite"></div>
+        </div>
+        <div class="game-footer">
+          <span><i data-lucide="shield-check"></i> 无失败结局，所有心动都会被接住</span>
+          <button class="icon-text-button" id="restartGameButton" type="button" title="重新开始">
+            <i data-lucide="rotate-ccw"></i>
+            重新开始
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section letter-section" id="letter" aria-labelledby="letterTitle">
+      <div class="letter-stars" aria-hidden="true"></div>
+      <div class="letter-copy">
+        <p class="section-kicker reveal"><i data-lucide="pen-line"></i> A LETTER TO MY UNIVERSE</p>
+        <h2 id="letterTitle" class="reveal">如果宇宙有尽头，<br>我想那里也写着<span class="serif-accent">你的名字</span>。</h2>
+        <p class="section-lede reveal">
+          这封信没有寄件地址，也不需要邮票。它从我的心跳出发，
+          穿过每一个想你想到睡不着的夜晚，只落在你手里。
+        </p>
+
+        <div class="promise-list reveal">
+          <div><span>01</span><p><strong>我会认真听你说话</strong><small>包括那些没有说出口的小情绪。</small></p></div>
+          <div><span>02</span><p><strong>我会记得每一个约定</strong><small>哪怕只是明天一起吃一顿早餐。</small></p></div>
+          <div><span>03</span><p><strong>我会一直站在你这边</strong><small>世界很吵，但我永远偏向你。</small></p></div>
+        </div>
+
+        <button class="button button-light reveal" type="button" data-open-letter>
+          <i data-lucide="mail-open"></i>
+          打开这封星际来信
+        </button>
+      </div>
+
+      <div class="envelope-stage reveal">
+        <div class="envelope-glow"></div>
+        <div class="orbit-decoration o-one"></div>
+        <div class="orbit-decoration o-two"></div>
+        <button class="envelope" type="button" data-open-letter aria-label="打开情书">
+          <span class="envelope-back"></span>
+          <span class="letter-peek">
+            <small>TO MY DEAREST</small>
+            <strong>你是我<br>所有浪漫的出处</strong>
+            <em>with all my love, always.</em>
+          </span>
+          <span class="envelope-front"></span>
+          <span class="envelope-flap"></span>
+          <span class="wax-seal"><i data-lucide="heart"></i></span>
+        </button>
+        <p class="envelope-caption"><i data-lucide="move-down"></i> 轻触信封 · 拆开我的宇宙</p>
+        <span class="coordinate-mark">TO: <b id="envelopeGirlName">宝贝</b> / FROM: <b id="envelopeMyName">我</b></span>
+      </div>
+
+      <div class="wish-strip reveal">
+        <div class="wish-copy">
+          <span><i data-lucide="star"></i> OUR NEXT WISH</span>
+          <p>写一句想对未来的我们说的话，把它留在今夜。</p>
+        </div>
+        <form class="wish-form" id="wishForm">
+          <label class="sr-only" for="wishInput">写下一个星愿</label>
+          <input id="wishInput" type="text" maxlength="80" placeholder="例如：以后每个生日都一起过" autocomplete="off">
+          <button type="submit" aria-label="收下这个星愿"><i data-lucide="send"></i></button>
+        </form>
+        <p class="wish-saved" id="wishSaved" aria-live="polite"></p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-brand">
+      <span class="brand-mark"><i data-lucide="orbit"></i></span>
+      <div><strong>LUNARIS</strong><small>A PRIVATE UNIVERSE FOR TWO</small></div>
+    </div>
+    <p>Made from stardust, gravity & every version of you.</p>
+    <div class="footer-actions">
+      <button class="icon-text-button" type="button" id="secretStarButton">
+        <i data-lucide="star"></i>
+        藏起一颗星
+      </button>
+      <a class="back-to-top" href="#top" aria-label="回到顶部"><i data-lucide="arrow-up"></i></a>
+    </div>
+  </footer>
+
+  <dialog class="settings-dialog" id="settingsDialog">
+    <form class="settings-form" id="settingsForm">
+      <div class="dialog-heading">
+        <div>
+          <span class="dialog-kicker">PERSONALIZE THE UNIVERSE</span>
+          <h2>只属于你们的设定</h2>
+        </div>
+        <button class="icon-button dialog-close" type="button" data-close-dialog aria-label="关闭设定">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <p class="dialog-intro">换个称呼，放进真正属于你们的那一天。所有内容只会保存在这台设备里。</p>
+
+      <div class="settings-fields">
+        <label>
+          <span>我的昵称</span>
+          <input id="myNameInput" name="myName" type="text" maxlength="12" autocomplete="off">
+        </label>
+        <label>
+          <span>她的昵称</span>
+          <input id="girlNameInput" name="girlName" type="text" maxlength="12" autocomplete="off">
+        </label>
+        <label class="date-field">
+          <span>我们相爱的第一天</span>
+          <input id="anniversaryInput" name="anniversary" type="date">
+        </label>
+      </div>
+
+      <div class="settings-note">
+        <i data-lucide="shield-check"></i>
+        <p><strong>这是你们两个人的小宇宙</strong><span>没有账号、没有追踪，只有你和她。</span></p>
+      </div>
+
+      <div class="dialog-actions">
+        <button class="text-button" type="button" id="resetSettingsButton">恢复初始设定</button>
+        <button class="button button-primary" type="submit">
+          <i data-lucide="check"></i>
+          保存我们的设定
+        </button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="letter-dialog" id="letterDialog">
+    <div class="letter-paper">
+      <button class="icon-button letter-close" type="button" data-close-dialog aria-label="合上信">
+        <i data-lucide="x"></i>
+      </button>
+      <div class="letter-paper-head">
+        <span>PRIVATE TRANSMISSION / NO. <b id="letterNumber">1017</b></span>
+        <span id="letterDate">OCT 27, 2026</span>
+      </div>
+      <div class="letter-paper-content">
+        <p class="to-line">写给我最亲爱的 <b id="letterGirlName">宝贝</b>：</p>
+        <p>见字如面。</p>
+        <p>以前总觉得“宇宙”是一个很远的词，直到你出现。后来才发现，它会藏在一次回头、一句晚安，还有你笑起来时眼睛里细碎的光里。</p>
+        <p>我喜欢的不是一个被想象出来的完美的人，而是你。是你会开心、会生气、会心软、会逞强，是你所有真实又生动的样子。你不需要一直发光，因为在我这里，你可以安心做一颗偶尔想休息的星星。</p>
+        <p>如果以后我们遇到很远的路、很大的雨，或者一时找不到方向，请记得回头看看。我会在。不是刚好在，是一直在。不是顺路，是专门为你而来。</p>
+        <p>谢谢你愿意把时间分给我，把柔软的心事讲给我，把很多个普通的今天变成我舍不得忘记的昨天。</p>
+        <p>所以，继续和我一起走吧。去看没有看过的海，去过很多个平常但因为你而特别的明天。宇宙很大，我的轨道很小，小到只够绕着你一个人旋转。</p>
+        <p class="letter-signoff">一直爱你，<br><b id="letterMyName">我</b></p>
+      </div>
+      <div class="letter-paper-foot">
+        <span>END OF TRANSMISSION</span>
+        <span><i data-lucide="heart"></i> FOREVER YOURS</span>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog class="lightbox" id="lightbox">
+    <div class="lightbox-content">
+      <button class="icon-button lightbox-close" type="button" data-close-dialog aria-label="关闭照片">
+        <i data-lucide="x"></i>
+      </button>
+      <div class="lightbox-media" id="lightboxMedia"></div>
+      <div class="lightbox-copy">
+        <span id="lightboxIndex">MEMORY 01</span>
+        <h2 id="lightboxTitle">海风替我说喜欢你</h2>
+        <p id="lightboxNote">浪一遍遍靠近岸，像我不厌其烦地奔向你。</p>
+        <div class="lightbox-meta">
+          <span id="lightboxDate"><i data-lucide="calendar-heart"></i> 那个夏天</span>
+          <button class="heart-button is-loved" id="lightboxHeart" type="button" aria-label="收藏这一刻" aria-pressed="true">
+            <i data-lucide="heart"></i>
+          </button>
+        </div>
+        <div class="uploaded-actions" id="uploadedActions" hidden>
+          <label for="captionInput">给这一刻写句话</label>
+          <div class="caption-row">
+            <input id="captionInput" type="text" maxlength="48" placeholder="这一刻，我记得...">
+            <button class="button button-light compact-button" id="saveCaptionButton" type="button">
+              <i data-lucide="check"></i> 保存
+            </button>
+          </div>
+          <button class="text-button danger-text" id="deletePhotoButton" type="button">
+            <i data-lucide="trash-2"></i> 从宇宙中移除
+          </button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog class="surprise-dialog" id="surpriseDialog">
+    <div class="surprise-content">
+      <button class="icon-button surprise-close" type="button" data-close-dialog aria-label="关闭惊喜">
+        <i data-lucide="x"></i>
+      </button>
+      <div class="surprise-moon" aria-hidden="true"></div>
+      <span>SECRET COORDINATE FOUND</span>
+      <h2>找到你了，我的小宇宙。</h2>
+      <p>如果有一天你觉得世界不够温柔，就回到这里。这里有你的照片、我们的时间，还有一颗永远偏向你的心。</p>
+      <div class="surprise-code">LOVE / 1017 / FOREVER</div>
+      <button class="button button-primary" type="button" data-close-dialog>
+        <i data-lucide="heart"></i>
+        收进心里
+      </button>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <i data-lucide="sparkles"></i>
+    <span id="toastText">已保存</span>
+  </div>
+
+  <noscript>
+    <div class="noscript">请开启 JavaScript，让这座私人宇宙开始旋转。</div>
+  </noscript>
+
+  <audio id="backgroundAudio" src="tizzy-t-99.mp3" loop preload="metadata"></audio>
+  <script src="lucide.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
