@@ -1070,7 +1070,6 @@
     const playTrack = async () => {
       try {
         await track.play();
-        showToast("正在播放 · Tizzy T《99》");
       } catch (error) {
         console.warn("Could not play background track:", error);
         showToast("背景音乐没有成功播放，请再点一次");
@@ -1083,6 +1082,13 @@
     });
 
     track.addEventListener("play", updatePlaybackUI);
+    track.addEventListener("playing", () => {
+      updatePlaybackUI();
+      showToast("正在播放 · Tizzy T《99》");
+    });
+    track.addEventListener("waiting", () => {
+      showToast("《99》正在加载，请稍候");
+    });
     track.addEventListener("pause", updatePlaybackUI);
     track.addEventListener("ended", updatePlaybackUI);
     track.addEventListener("error", () => {
